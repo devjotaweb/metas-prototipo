@@ -1,0 +1,13 @@
+# Gobierno interno del agente y memoria de sesión: no se publican.
+AGENTS.md
+opencode.json
+docs/PROMPT_PLAN.md
+docs/CHECKLIST.md
+docs/PROGRESS.md
+docs/SECURITY.md
+docs/memory/
+
+# Verificación local y sonda de desarrollo, no necesarias para ejecutar.
+scripts/check.ps1
+tests/cors-probe.html
+tests/cors-probe.js

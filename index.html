@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <!--
+    CSP: denegar por defecto. Solo se permite el propio origen para scripts y
+    estilos, y conexiones únicamente a la API oficial de series de tiempo.
+    PORQUÉ: si un dato externo lograra inyectar una etiqueta de script, el
+    navegador la bloquearía antes de ejecutarla.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src https://apis.datos.gob.ar; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metas de Ahorro — Nueva meta</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Pantalla de fondo: queda inerte mientras la hoja está abierta. -->
+  <div class="app-shell" id="app">
+    <header class="topbar">
+      <span class="avatar" aria-hidden="true">U</span>
+      <h1 class="topbar__titulo">Metas de Ahorro</h1>
+      <div class="topbar__acciones" aria-hidden="true">
+        <span class="boton-icono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM16 16l4 4"/>
+          </svg>
+        </span>
+        <span class="boton-icono boton-icono--campana">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M6 9a6 6 0 1 1 12 0c0 7 2 7 2 9H4c0-2 2-2 2-9zM10 21h4"/>
+          </svg>
+          <span class="badge">2</span>
+        </span>
+      </div>
+    </header>
+
+    <main class="contenido">
+      <section class="hero" aria-labelledby="titulo-metas">
+        <p class="hero__saludo">Tu espacio de ahorro</p>
+        <div class="hero__fila">
+          <div class="hero__textos">
+            <h2 id="titulo-metas">Tus metas</h2>
+            <p class="hero__texto">Organizá lo que querés lograr y seguí el ritmo mes a mes.</p>
+          </div>
+          <button type="button" class="boton-primario boton-primario--chico" id="abrir-hoja">Nueva meta</button>
+        </div>
+      </section>
+
+      <section class="tarjeta" id="tarjeta-metas" aria-labelledby="titulo-lista" hidden>
+        <div class="tarjeta__fila">
+          <h3 class="tarjeta__titulo" id="titulo-lista">Tus metas guardadas</h3>
+          <span class="contador" id="metas-contador"></span>
+        </div>
+        <ul class="metas" id="metas-lista"></ul>
+        <p class="error" id="metas-error" role="alert" hidden></p>
+      </section>
+
+      <p class="ayuda" id="estado-metas" role="status" aria-live="polite"></p>
+
+      <section class="tarjeta estado-vacio" id="estado-vacio" aria-labelledby="titulo-vacio">
+        <div class="estado-vacio__icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.2 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.2 5.9-.9z"/>
+          </svg>
+        </div>
+        <h3 id="titulo-vacio">Todavía no tenés metas</h3>
+        <p>Creá la primera y empezá a separar plata con un plan claro.</p>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="Navegación principal">
+      <span class="tabbar__item" aria-disabled="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M3 11l9-8 9 8v10H3zM9 21v-7h6v7"/>
+        </svg>
+        <span>Inicio</span>
+      </span>
+      <span class="tabbar__item" aria-disabled="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2"/>
+        </svg>
+        <span>Historial</span>
+      </span>
+      <span class="tabbar__item" aria-disabled="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M12 4v14M6 12l6 6 6-6"/>
+        </svg>
+        <span>Gastos</span>
+      </span>
+      <span class="tabbar__item" aria-disabled="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M12 20V6M6 12l6-6 6 6"/>
+        </svg>
+        <span>Ingresos</span>
+      </span>
+      <span class="tabbar__item tabbar__item--activo" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+        </svg>
+        <span>Metas</span>
+      </span>
+    </nav>
+  </div>
+
+  <div class="fondo-hoja" id="fondo-hoja" aria-hidden="true" hidden></div>
+
+  <section class="hoja" id="hoja-nueva-meta" role="dialog" aria-modal="true" aria-labelledby="titulo-hoja" tabindex="-1" hidden>
+    <header class="hoja__cabecera">
+      <h2 id="titulo-hoja">Nueva meta</h2>
+      <button type="button" class="boton-icono boton-icono--cerrar" id="cerrar-hoja" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </header>
+
+    <form class="hoja__cuerpo" id="form-meta" novalidate autocomplete="off">
+      <noscript>
+        <p class="aviso">Necesitás habilitar JavaScript para usar esta pantalla.</p>
+      </noscript>
+
+      <section class="tarjeta" aria-labelledby="titulo-meta">
+        <h3 class="tarjeta__titulo" id="titulo-meta">Meta</h3>
+
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" type="text" maxlength="60" autocomplete="off" placeholder="Ej: Cubierta nueva" aria-describedby="error-nombre">
+          <p class="error" id="error-nombre" role="alert" hidden></p>
+        </div>
+
+        <div class="campo">
+          <label for="monto">Monto objetivo</label>
+          <div class="campo-adornado">
+            <span class="adorno adorno--izq" id="prefijo-monto" aria-hidden="true">$</span>
+            <input id="monto" name="monto" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej: 1.000.000" aria-describedby="error-monto">
+          </div>
+          <p class="error" id="error-monto" role="alert" hidden></p>
+        </div>
+
+        <div class="campo">
+          <span class="campo__etiqueta" id="etiqueta-moneda">Moneda</span>
+          <div class="segmentado" id="grupo-moneda" role="radiogroup" aria-labelledby="etiqueta-moneda" aria-describedby="error-moneda" tabindex="-1">
+            <button type="button" role="radio" aria-checked="true" data-valor="ARS" tabindex="0">🇦🇷 Pesos</button>
+            <button type="button" role="radio" aria-checked="false" data-valor="USD" tabindex="-1">🇺🇸 Dólares</button>
+          </div>
+          <p class="error" id="error-moneda" role="alert" hidden></p>
+        </div>
+      </section>
+
+      <section class="tarjeta" aria-labelledby="titulo-ahorro">
+        <h3 class="tarjeta__titulo" id="titulo-ahorro">Ahorro</h3>
+
+        <div class="campo">
+          <label for="cuenta">Cuenta de ahorro</label>
+          <select id="cuenta" name="cuenta" aria-describedby="ayuda-cuenta error-cuenta">
+            <!-- ui.js agrega las opciones desde config.CUENTAS. -->
+          </select>
+          <p class="ayuda ayuda--naranja" id="ayuda-cuenta">Elegí dónde vas a guardar la plata: los aportes se transfieren a esta cuenta.</p>
+          <p class="error" id="error-cuenta" role="alert" hidden></p>
+        </div>
+
+        <div class="campo">
+          <span class="campo__etiqueta" id="etiqueta-aporte">Aporte automático</span>
+          <div class="segmentado" id="grupo-aporte" role="radiogroup" aria-labelledby="etiqueta-aporte" aria-describedby="error-aporte" tabindex="-1">
+            <button type="button" role="radio" aria-checked="true" data-valor="ninguno" tabindex="0">Ninguno</button>
+            <button type="button" role="radio" aria-checked="false" data-valor="monto_fijo" tabindex="-1">Monto fijo</button>
+            <button type="button" role="radio" aria-checked="false" data-valor="porcentaje" tabindex="-1">% de cobro</button>
+          </div>
+
+          <div class="campo" id="aporte-campo" hidden>
+            <label for="aporte-valor" id="aporte-etiqueta">Monto mensual</label>
+            <div class="campo-adornado">
+              <span class="adorno adorno--izq" id="aporte-prefijo" aria-hidden="true">$</span>
+              <input id="aporte-valor" name="aporte-valor" type="text" inputmode="numeric" autocomplete="off" placeholder="Ej: 50.000" aria-describedby="error-aporte">
+              <span class="adorno adorno--der" id="aporte-sufijo" aria-hidden="true" hidden>%</span>
+            </div>
+          </div>
+
+          <p class="error" id="error-aporte" role="alert" hidden></p>
+        </div>
+      </section>
+
+      <section class="tarjeta" aria-labelledby="titulo-plazo">
+        <h3 class="tarjeta__titulo" id="titulo-plazo">Plazo</h3>
+        <div class="campo">
+          <label for="plazo">Fecha límite</label>
+          <input id="plazo" name="plazo" type="date" aria-describedby="ayuda-plazo error-plazo">
+          <p class="ayuda" id="ayuda-plazo">Opcional. Sin fecha no calculamos el ritmo.</p>
+          <p class="error" id="error-plazo" role="alert" hidden></p>
+        </div>
+      </section>
+
+      <section class="tarjeta tarjeta--pendiente" id="tarjeta-proteccion" aria-labelledby="titulo-proteccion" aria-disabled="true">
+        <div class="tarjeta__fila">
+          <div>
+            <h3 class="tarjeta__titulo" id="titulo-proteccion">Proteger tu meta de los aumentos</h3>
+            <p class="ayuda">Ajustamos el ritmo sugerido mes a mes.</p>
+          </div>
+          <button type="button" class="switch" id="switch-proteccion" role="switch" aria-checked="false" aria-labelledby="titulo-proteccion" aria-describedby="ayuda-proteccion" disabled></button>
+        </div>
+
+        <div class="proteccion-contenido" id="proteccion-contenido" hidden>
+          <div class="campo">
+            <label for="tasa-mensual">Estimación mensual <span class="sr-only">en porcentaje</span></label>
+            <div class="campo-adornado campo-adornado--tasa">
+              <input id="tasa-mensual" name="tasa-mensual" type="text" inputmode="decimal" autocomplete="off" placeholder="Ej: 2,0" aria-describedby="origen-tasa aviso-tasa error-tasa">
+              <button type="button" class="boton-lapiz" id="editar-tasa" aria-label="Editar la estimación mensual">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <path d="M4 20h4l10-10-4-4L4 16zM14 6l4 4"/>
+                </svg>
+              </button>
+              <span class="adorno adorno--der" aria-hidden="true">%</span>
+            </div>
+            <p class="origen-tasa">
+              <span id="origen-tasa" aria-live="polite">Consultando el último dato oficial…</span>
+              <button type="button" class="enlace-boton" id="restaurar-tasa" hidden>Volver al dato oficial</button>
+            </p>
+            <p class="aviso-tasa" id="aviso-tasa" role="status" hidden></p>
+            <p class="error" id="error-tasa" role="alert" hidden></p>
+          </div>
+
+          <div class="caja-explicativa" id="caja-proteccion" hidden>
+            <p class="caja-explicativa__titulo">Así cuidamos tu esfuerzo</p>
+            <p class="caja-explicativa__texto" id="texto-proteccion"></p>
+            <ul class="caja-explicativa__lista">
+              <li>Este mes arrancás separando <strong id="proteccion-cuota-inicial">—</strong></li>
+              <li>El mes que viene ajustás a <strong id="proteccion-cuota-siguiente">—</strong> <span class="ayuda" id="proteccion-aumento"></span></li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="ayuda" id="ayuda-proteccion">Completá el monto y el plazo para ver la estimación.</p>
+      </section>
+
+      <section class="tarjeta tarjeta--pendiente" id="tarjeta-calculadora" aria-labelledby="titulo-calculadora" aria-disabled="true">
+        <h3 class="tarjeta__titulo" id="titulo-calculadora">Calculadora de ritmo</h3>
+        <p class="ayuda">Probá cuánto separar por mes para llegar bien.</p>
+        <p class="ayuda" id="ayuda-calculadora">Se activa cuando definas el plazo.</p>
+
+        <div class="calculadora-contenido" id="calculadora-contenido" hidden>
+          <div class="campo">
+            <label for="aporte-calculado">Si este mes separás</label>
+            <div class="campo-adornado">
+              <span class="adorno adorno--izq" aria-hidden="true">$</span>
+              <input id="aporte-calculado" name="aporte-calculado" type="text" inputmode="numeric" autocomplete="off" aria-describedby="error-aporte-calculado">
+            </div>
+            <input type="range" class="slider" id="slider-aporte" min="0" max="1000" step="1000" value="0" aria-label="Monto a separar este mes">
+            <p class="error" id="error-aporte-calculado" role="alert" hidden></p>
+          </div>
+
+          <div class="cajas-resultado">
+            <div class="caja-resultado">
+              <span class="caja-resultado__etiqueta">Próximo mes</span>
+              <strong class="caja-resultado__valor" id="calculadora-proximo">—</strong>
+              <span class="ayuda" id="calculadora-diferencia">—</span>
+            </div>
+            <div class="caja-resultado">
+              <span class="caja-resultado__etiqueta" id="calculadora-plazo">En 0 meses</span>
+              <strong class="caja-resultado__valor" id="calculadora-total">—</strong>
+              <span class="ayuda" id="calculadora-porcentaje">—</span>
+            </div>
+          </div>
+
+          <p class="ayuda" id="tasa-calculadora">Con un ajuste del 0,0 % mensual (estimado).</p>
+          <button type="button" class="boton-secundario" id="aplicar-plan">Aplicar este plan a mi meta</button>
+          <p class="ayuda" id="confirmacion-calculadora" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- Los detalles son opcionales: quedan plegados para que la hoja no
+           parezca un formulario interminable al abrirla. -->
+      <div class="detalles" id="detalles-opcionales">
+        <button type="button" class="boton-secundario detalles__toggle" id="ver-detalles" aria-expanded="false" aria-controls="detalles-contenido">Ver detalles opcionales</button>
+        <div class="detalles__contenido" id="detalles-contenido" hidden>
+          <section class="tarjeta" aria-labelledby="titulo-foto">
+            <h3 class="tarjeta__titulo" id="titulo-foto">Foto</h3>
+
+            <button type="button" class="foto-zona" id="elegir-foto" aria-describedby="error-foto">
+              <span class="foto-zona__icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  <path d="M4 7h3l2-3h6l2 3h3v13H4zM12 11a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                </svg>
+              </span>
+              <span id="foto-zona-texto">Elegir foto</span>
+              <span class="ayuda">JPEG, PNG o WebP · hasta 5 MB</span>
+            </button>
+            <input type="file" id="archivo-foto" accept="image/jpeg,image/png,image/webp" hidden>
+
+            <div class="foto-preview" id="foto-preview" hidden>
+              <img id="foto-img" alt="Vista previa de la foto">
+              <button type="button" class="boton-secundario" id="quitar-foto">Quitar foto</button>
+            </div>
+
+            <p class="error" id="error-foto" role="alert" hidden></p>
+          </section>
+
+          <section class="tarjeta" aria-labelledby="titulo-icono">
+        <h3 class="tarjeta__titulo" id="titulo-icono">Ícono</h3>
+        <div class="iconos" id="grupo-iconos" role="radiogroup" aria-label="Ícono de la meta" aria-describedby="error-icono" tabindex="-1"></div>
+        <p class="error" id="error-icono" role="alert" hidden></p>
+      </section>
+
+      <section class="tarjeta" aria-labelledby="titulo-opciones">
+        <h3 class="tarjeta__titulo" id="titulo-opciones">Opciones</h3>
+
+        <div class="campo">
+          <span class="campo__etiqueta" id="etiqueta-prioridad">Prioridad</span>
+          <div class="segmentado" id="grupo-prioridad" role="radiogroup" aria-labelledby="etiqueta-prioridad" aria-describedby="error-prioridad" tabindex="-1">
+            <button type="button" role="radio" aria-checked="false" data-valor="alta" tabindex="-1">Alta</button>
+            <button type="button" role="radio" aria-checked="true" data-valor="media" tabindex="0">Media</button>
+            <button type="button" role="radio" aria-checked="false" data-valor="baja" tabindex="-1">Baja</button>
+          </div>
+          <p class="error" id="error-prioridad" role="alert" hidden></p>
+        </div>
+
+        <div class="campo">
+          <div class="campo__fila">
+            <label for="nota">Nota (opcional)</label>
+            <span class="contador" id="nota-contador" aria-live="polite">0 / 200</span>
+          </div>
+          <textarea id="nota" name="nota" maxlength="200" rows="3" placeholder="¿Para qué es esta meta?" aria-describedby="nota-contador error-nota"></textarea>
+          <p class="error" id="error-nota" role="alert" hidden></p>
+        </div>
+
+        <div class="campo">
+          <label for="link">Link de referencia (opcional)</label>
+          <input id="link" name="link" type="url" inputmode="url" maxlength="2048" autocomplete="off" placeholder="Pegá un enlace" aria-describedby="error-link">
+          <p class="error" id="error-link" role="alert" hidden></p>
+        </div>
+
+        <div class="fila-switch">
+          <div>
+            <span class="fila-switch__titulo" id="principal-label">Meta principal</span>
+            <p class="ayuda" id="principal-ayuda">Se destaca en el inicio y reemplaza a la actual.</p>
+          </div>
+          <button type="button" class="switch" id="principal" role="switch" aria-checked="false" aria-labelledby="principal-label" aria-describedby="principal-ayuda"></button>
+        </div>
+          </section>
+        </div>
+      </div>
+    </form>
+
+    <div class="hoja__acciones">
+      <p class="estado-form" id="estado-form" role="status" aria-live="polite"></p>
+      <button type="submit" class="boton-primario" id="guardar-meta" form="form-meta" disabled>Guardar meta</button>
+    </div>
+  </section>
+
+  <!--
+    Scripts clásicos con defer (no módulos ES): los navegadores suelen
+    bloquear los módulos cuando la página se abre con file://.
+    El orden es explícito: cada archivo depende de los anteriores.
+  -->
+  <script defer src="js/config.js"></script>
+  <script defer src="js/validators.js"></script>
+  <script defer src="js/plan.js"></script>
+  <script defer src="js/storage.js"></script>
+  <script defer src="js/inflation.js"></script>
+  <script defer src="js/photo.js"></script>
+  <script defer src="js/ui.js"></script>
+  <script defer src="js/app.js"></script>
+</body>
+</html>
