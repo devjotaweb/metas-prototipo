@@ -100,21 +100,6 @@ docs/GUIA.md
 - Sin fuente oficial de inflación en dólares, la protección y la calculadora se
   deshabilitan en USD con una explicación.
 
-## Subirlo a GitHub
-
-El repositorio todavía no tiene historial. Esos comandos los ejecutás vos (no
-los corre el agente, porque incluyen operaciones de red):
-
-```
-git init
-git add .
-git commit -m "Metas de Ahorro: prototipo web sin dependencias"
-git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
-git push -u origin main
-```
-
-Reemplazá `TU_USUARIO/TU_REPO` por tus datos. Si la rama se llama `master`,
-usala en el último comando.
 
 ## Fuente de datos
 
